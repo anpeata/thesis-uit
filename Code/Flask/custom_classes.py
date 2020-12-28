@@ -21,8 +21,6 @@ class encode_categorical(BaseEstimator, TransformerMixin):
     def set_params(self, **kwargs):
         self.col_list = kwargs.get('col_list', None)
         return self
-        
-    
     
     def fit(self, X, y=None,  **fit_params):
         for col in self.col_list:
@@ -30,7 +28,6 @@ class encode_categorical(BaseEstimator, TransformerMixin):
             self.le[col] = LabelEncoder()
             self.le[col].fit(X[col].tolist())
         return self
-        
     
     def transform(self, X, y=None, **tranform_params):
         for col in self.col_list:
@@ -52,13 +49,10 @@ class prep_for_keras_input(BaseEstimator, TransformerMixin):
         self.continuouscols = kwargs.get('continuouscols', None)
         self.textcols = kwargs.get('textcols', None)
         return self
-        
-    
-    
+ 
     def fit(self, X, y=None,  **fit_params):
         return self
-        
-    
+ 
     def transform(self, X, y=None, **tranform_params):
         for col in self.collist:
             print("cat col is",col)

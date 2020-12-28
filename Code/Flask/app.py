@@ -20,7 +20,7 @@ from pytorch_pretrained_bert.modeling import BertForSequenceClassification, Bert
 from pytorch_pretrained_bert.tokenization import BertTokenizer
 from pytorch_pretrained_bert.optimization import BertAdam, WarmupLinearSchedule
 
-from flask import Flask, render_template, url_for, g, request, send_from_directory, abort, request_started, jsonify
+from flask import Flask, render_template, url_for, g, request, send_from_directory, abort, request_started, jsonify, send_file
 from flask_cors import CORS
 from flask_restful import Resource, reqparse
 from flask_restful_swagger_2 import Api, swagger, Schema
@@ -30,9 +30,11 @@ from neo4j.exceptions import Neo4jError, ServiceUnavailable
 from preprocess import extract_features
 import neo4j.time
 
+import codecs
+
 DATABASE_USERNAME = ('neo4j')
-DATABASE_PASSWORD = ('stability-generators-multitask')
-DATABASE_URL = ('bolt://34.207.188.109:33393')
+DATABASE_PASSWORD = ('grand-buzzer-cake-pony-almanac-414')
+DATABASE_URL = ('bolt://localhost:7687')
 # template_dir = 'D:/university/uit/thesis/code/tmp/Thesis/templates/'
 driver = GraphDatabase.driver(DATABASE_URL, auth=basic_auth(DATABASE_USERNAME, str(DATABASE_PASSWORD)))
 app = Flask(__name__)
@@ -68,7 +70,6 @@ def get_db():
         g.neo4j_db = driver.session()
     return g.neo4j_db
 
-
 @app.teardown_appcontext
 def close_db(error):
     if hasattr(g, 'neo4j_db'):
@@ -78,56 +79,66 @@ def close_db(error):
 def final():      
     return render_template('base.html')
 
-# The result of classification will appeared in result.html
-@app.route('/result.html/')
-def about():
+# RESULT DISPLAY
+# Get descriptions
+def get_subjects(tx, s_name):
+    def s_query(tx, s_name):
+        result = tx.run(
+                        'match (s:Subject) where s.name = $s_name return s.description as s_description'
+                        , s_name=s_name)
+        result = [record['s_description'] for record in result]
+        return result
+    db = get_db()
+    result = db.read_transaction(s_query, s_name)
+    result_s = [res for res in result]
+    db.close()
+    return result_s[0]
+
+def get_relation(tx, r_name, s_name):
+    def r_query(tx, r_name, s_name):
+        result = tx.run(
+                        'match (s:Subject)-[r:la]-(friends) where s.name = $s_name return r.description as r_description'
+                        , s_name=s_name, r_name=r_name)
+        result = [record['r_description'] for record in result]
+        return result
+    db = get_db()
+    result = db.read_transaction(r_query, r_name, s_name)
+    result_r = [res for res in result]
+    db.close()
+    return result_r[0]
+
+def get_objects(tx, o_name):
+    def o_query(tx, o_name):
+        result = tx.run(
+                        'match (o:Object) where o.name = $o_name return o.description as o_description'
+                        , o_name=o_name)
+        result = [record['o_description'] for record in result]
+        return result
+    db = get_db()
+    result = db.read_transaction(o_query, o_name)
+    result_o = [res for res in result]
+    db.close()
+    return result_o[0]
+
+@app.route('/predict', methods=['POST'])
+def predict():
     '''
     Get value from front-end
     Search in Neo4j to get their description as an input for model
     '''
     #get value from front-end
-    value = {}
-    value['Subject'] = request.args.get('subject')
-    value['Relation'] = request.args.get('rela')
-    value['Object'] = request.args.get('object')
     
+    value = {}
+    # str_features = [str(x) for x in request.form.values()]
+    # value['Subject'] = str_features[0]
+    # value['Relation'] = str_features[1]
+    # value['Object'] = str_features[2]
+    value['Subject'] = request.form.get('subject')
+    value['Relation'] = request.form.get('relation')
+    value['Object'] = request.form.get('object')
+
     # Querying in Neo4j
-    def get_subjects(tx, s_name):
-        def s_query(tx, s_name):
-            result = tx.run(
-                            'match (s:Subject) where s.name = $s_name return s.description as s_description'
-                            , s_name=s_name)
-            result = [record['s_description'] for record in result]
-            return result
-        db = get_db()
-        result = db.read_transaction(s_query, s_name)
-        result_s = [res for res in result]
-        db.close()
-        return result_s[0]
-    def get_relation(tx, r_name, s_name):
-        def r_query(tx, r_name, s_name):
-            result = tx.run(
-                            'match (s:Subject)-[r:co_mon_an_dac_san]-(friends) where s.name = $s_name return r.description as r_description'
-                            , s_name=s_name, r_name=r_name)
-            result = [record['r_description'] for record in result]
-            return result
-        db = get_db()
-        result = db.read_transaction(r_query, r_name, s_name)
-        result_r = [res for res in result]
-        db.close()
-        return result_r[0]
-    def get_objects(tx, o_name):
-        def o_query(tx, o_name):
-            result = tx.run(
-                            'match (o:Object) where o.name = $o_name return o.description as o_description'
-                            , o_name=o_name)
-            result = [record['o_description'] for record in result]
-            return result
-        db = get_db()
-        result = db.read_transaction(o_query, o_name)
-        result_o = [res for res in result]
-        db.close()
-        return result_o[0]
+    
     subj = get_subjects(driver, value['Subject'])
     re = get_relation(driver, value['Relation'], value['Subject'])
     obj = get_objects(driver, value['Object'])
@@ -154,17 +165,60 @@ def about():
     logging.warning(output)
 
     if output[1] >= 0.5:
-        predicted_string =  'Correct. This triple is exist in a sentence'
+        predicted_string =  'TRUE - This triple is existent in the description!'
     else:
-        predicted_string = 'Not Correct. This triple is not exist in a sentence'
+        predicted_string = 'FALSE - This triple is not existent in the description!'
     
     # What variable will be returned to second page
     prediction = {'prediction_key': predicted_string}
     subjects = {'subject_key': value['Subject']}
     relation = {'relation_key':value['Relation']}
     objects = {'object_key':value['Object']}
-    print(objects['object_key'])
-    return (render_template('/result.html', prediction=prediction, subjects=subjects, relation=relation, objects=objects))
+
+    def gen_org():
+        if request.method == 'POST':
+            value = {}
+            value['Subject'] = request.form.get('subject')
+            value['Relation'] = request.form.get('relation')
+            value['Object'] = request.form.get('object')
+            subj = get_subjects(driver, value['Subject'])
+            re = get_relation(driver, value['Relation'], value['Subject'])
+            obj = get_objects(driver, value['Object'])
+            logging.warning(subj)
+
+            subj = subj.encode().decode("utf-8") 
+            re = re.encode().decode("utf-8")
+            obj = obj.encode().decode("utf-8")
+
+            desc_text = subj + re + obj
+            desc_filename = 'original.txt'
+            desc_file = codecs.open('temp_files/' + desc_filename, 'w', "utf-8")
+            desc_file.write(desc_text)
+            desc_file.close()
+
+    # print(objects['object_key'])
+    # return (render_template('base.html', prediction=prediction, subjects=subjects, relation=relation, objects=objects))
+    gen_org()
+    return render_template('base.html', prediction_text='{}'.format(predicted_string))
+
+# downloading
+@app.route('/download_org')
+def download_org(): 
+    file = 'temp_files/original.txt'
+    return send_file(file, as_attachment=True)
+
+@app.route('/download_rand1')
+def download_rd1(): 
+    file = 'temp_files/random1.txt'
+    return send_file(file, as_attachment=True)
+
+@app.route('/download_rand2')
+def download_rd2(): 
+    file = 'temp_files/random2.txt'
+    return send_file(file, as_attachment=True)
+
+# @app.route('/predict', method=['POST'])
+
 
 if __name__ == "__main__":
     app.run(debug=True) 
