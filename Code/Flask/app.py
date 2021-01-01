@@ -165,9 +165,9 @@ def predict():
     logging.warning(output)
 
     if output[1] >= 0.5:
-        predicted_string =  'TRUE - This triple is existent in the description!'
+        predicted_string =  ' TRUE - This triple is existent in the description!'
     else:
-        predicted_string = 'FALSE - This triple is not existent in the description!'
+        predicted_string = ' FALSE - This triple is not existent in the description!'
     
     # What variable will be returned to second page
     prediction = {'prediction_key': predicted_string}
@@ -190,9 +190,9 @@ def predict():
             re = re.encode().decode("utf-8")
             obj = obj.encode().decode("utf-8")
 
-            desc_text = subj + re + obj
+            desc_text = subj + ' ' + obj # temporarily remove relation description
             desc_filename = 'original.txt'
-            desc_file = codecs.open('temp_files/' + desc_filename, 'w', "utf-8")
+            desc_file = codecs.open('temp_files/' + desc_filename, 'w', "utf-8") # path specified by terminal
             desc_file.write(desc_text)
             desc_file.close()
 
@@ -218,7 +218,6 @@ def download_rd2():
     return send_file(file, as_attachment=True)
 
 # @app.route('/predict', method=['POST'])
-
 
 if __name__ == "__main__":
     app.run(debug=True) 
