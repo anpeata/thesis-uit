@@ -1,7 +1,10 @@
 body {
     font-family: Helvetica;
     font-size: 15px;
+	/* background-color: white; /* For browsers that do not support gradients */
+	/* background-image: linear-gradient(to right, white , #fff9e5); */ 
 }
+
 .grid-container form{
     display: flex;
     flex-direction: row;
@@ -14,7 +17,6 @@ body {
 }
 .grid-container form label input{
     padding: 5px 5px 5px 5px;
-
 }
 
 /* new */
@@ -25,26 +27,22 @@ body {
 
 .main-title {
 	font-family: Acme;
-	font-size: 30px;
+	font-size: 25px;
 	text-align: center;
-	margin: 40px;
+	margin-top: 20px;
 }
 
 .style-viz {
-    border: 5px solid black;
-    width: 500px;
+    width: 600px;
     text-align: right;
+    border: 3px dashed #b1bbc9; 
+    height: 390px; 
 }
 
-body {
-	background-color: white; /* For browsers that do not support gradients */
-	background-image: linear-gradient(to right, white , #fff9e5);
-}
-
-.sub-block { 
+.sub-block-in { 
     float: left;
     margin-left: 50px;
-    margin-right: 200px;
+    margin-right: 50px;
     text-align: center;
 }
 
@@ -55,15 +53,21 @@ body {
 }
 
 fieldset {
-    margin-top: 30px;
+    margin: 10px;
+    margin-left: 230px;
     font-size: 20px; 
     font-family: Andada; 
     border: 3px double lightsalmon;
+    width: 1300px;
 }
 
 fieldset legend {
     font-weight: bold;
     font-family: 'Allerta Stencil';
+}
+
+.border_field {
+    border: 10px double lightsalmon;
 }
 
 .classify-button {
@@ -72,4 +76,15 @@ fieldset legend {
     background-color: lightsalmon; 
     font-weight: bold; 
     font-size:20px;
+}
+
+.sub-block-out { 
+    width: 1000px;
+    margin-top: 10px;
+}
+
+.download-box {
+    width: 150px;
+    float: left;	
+    margin-right: 50px;
 }
