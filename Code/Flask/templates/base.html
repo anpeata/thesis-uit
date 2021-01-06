@@ -82,14 +82,14 @@
 
 <body onload="draw()">
 	<article class='main-title'>
-		<h1>Applying <span style="color: blue">BERT</span> and<span style="color: blue"> Knowledge Graph</span> 
+		<h1>Applying <span style="color: blue">Knowled Graph </span>and <span style="color: blue">BERT</span> 
 			for <span style="color: blue">Vietnamese triple classification</span></h1>
 	</article>
 
 	<!-- INPUT AREA -->
-	<fieldset>
+	<fieldset class="border_field">
 		<legend>INPUT</legend>
-		<div class="sub-block">
+		<div class="sub-block-in">
 			<form action="{{ url_for('predict')}}" method="post" >
 				<p> 
 					Pick a <b>head</b>: 
@@ -121,36 +121,35 @@
 				<button type="submit" class="classify-button">Classify</button>
 			</form>
 		</div>
-		<div class="sub-block">
-			<div style="border: 3px dashed #b1bbc9; height: 400px; width: 600px; text-align: right;" class="style-viz" id="viz" >
+		<div class="sub-block-in">
+			<div class="style-viz" id="viz" >
 			</div>
 		</div>
 		<!-- <textarea rows="4" cols=50 id="cypher"></textarea><br> -->
 
 	</fieldset>
 	<!-- OUTPUT AREA -->
+	<h3 style="text-align: center;">___________________________________________</h3>
 		
-	<fieldset>
+	<fieldset class="border_field">
 		<legend>OUTPUT</legend>
 		<div>
-			<fieldset>
+			<fieldset class="sub-block-out" style="height: 150px;">
 				<legend>Model outcome</legend>
 				<div>
-					<h3 style="color: blue"> 
-						Triple classification result
-					</h3> 
+					<h4> Triple classification result </h4> 
 					<h2 style="color: green;"> >{{ prediction_text }}
 					</h2>
 				</div>
 			</fieldset>	
 		</div>
 		<div>
-			<fieldset style="margin-top: 20px;">
+			<fieldset class="sub-block-out" style="margin-top: 20px;">
 				<legend>Verification</legend>
-				<a style="width: 50px; float: left;	margin-right: 50px;" href="{{url_for('download_org')}}" download>Original text</a>
-				<a style="width: 50px; float: left;	margin-right: 50px;" href="{{url_for('download_rd1')}}" download>Random text 1</a>
-				<a style="width: 50px; float: left;	margin-right: 50px;" href="{{url_for('download_rd2')}}" download>Random text 2</a>
-				</fieldset>
+				<a class="download-box" href="{{url_for('download_org')}}" download>Original text</a>
+				<a class="download-box" href="{{url_for('download_rd1')}}" download>Random text 1</a>
+				<a class="download-box" href="{{url_for('download_rd2')}}" download>Random text 2</a>
+			</fieldset>
 		</div>
 		
 	</fieldset>
