@@ -37,7 +37,7 @@
 				server_password: "grand-buzzer-cake-pony-almanac-414",
 				labels: {
 					"Subject": {
-						"caption": "name",
+						"caption": "viz",
 						"font":{
 							"size":15,
 							"color":"red", 	
@@ -47,7 +47,7 @@
                         ]
 					},
 					"Object": {	
-						"caption": "name",
+						"caption": "viz",
 						"font":{
 							"size":15,
 							"color":"green"	
@@ -58,15 +58,30 @@
 					}
 				},
 				relationships: {
-					"have_a_special_dish": {
-						"caption": true,
+					"toa_lac_tai": {
+						"caption": "description",
+						"font":{
+							"size":15	,
+							"color":"#33DCFF"	
+						}
+					}, 
+					"truc_thuoc_trung_uong": {
+						"caption": "description",
+						"font":{
+							"size":15	,
+							"color":"#33DCFF"	
+						}
+					},
+					"dac_san": {
+						"caption": "description",
 						"font":{
 							"size":15	,
 							"color":"#33DCFF"	
 						}
 					}
+
 				},
-				initial_cypher: 'match (n)-[r:la]->(m) return * limit 10',
+				initial_cypher: 'MATCH (s)-[r]->(o) RETURN * LIMIT 10',
 
 				arrows: true,
                 hierarchical_layout:true,
@@ -94,9 +109,9 @@
 				<p> 
 					Pick a <b>head</b>: 
 					<select id="subject" name="subject" style="font-size: 18px;"> 
-						<option value="buon_ma_thuot">buon_ma_thuot</option> 
-						<option value="bac_kan">bac_kan</option> 
-						<option value="ha_noi">ha_noi</option>
+						<option value="ha_noi">Hà Nội</option> 
+						<option value="vung_tau">Vũng Tàu</option> 
+						<option value="tien_giang">Tiền Giang</option>
 						<!-- <input type="text" name="experience" placeholder="Experience" required="required" /> -->
 	
 					</select> 
@@ -104,16 +119,22 @@
 				<p> 
 					Pick a <b>relation</b>: 
 					<select id="rela" name="relation" style="font-size: 18px;"> 
-						<option value="duoc_xem_la">duoc_xem_la</option> 
+						<option value="dac_san">đặc sản</option> 
+						<option value="truc_thuoc_trung_uong">trực thuộc trung ương</option> 
+						<option value="toa_lac_tai">tọa lạc tại</option> 
 					</select> 
 				</p>
 				<p> 
 					Pick a <b>tail</b>: 
 					<select id="object" name="object" style="font-size: 18px;"> 
 						<!-- TODO correct this once training has happened with some 2020 values -->
-						<option value="thanh_pho_lon_nhat_vung_tay_nguyen">thanh_pho_lon_nhat_vung_tay_nguyen</option>  
-						<option value="tinh_giau_tiem_nang_du_lich">tinh_giau_tiem_nang_du_lich</option>  
-	
+						<option value="dong_bang_song_hong">Đồng bằng sông Hồng</option>  
+						<option value="dong_bang_song_cuu_long">Đồng bằng sông Cửu Long</option>  
+						<option value="dung">Đúng</option>  
+						<option value="sai">Sai</option>  
+						<option value="ba_ria_vung_tau">Bà Rịa - Vũng Tàu</option>  
+						<option value="le_hoi_chua_huong">Lễ hội chùa Hương</option>  
+						<option value="com">Cốm</option>  
 					</select> 
 				</p>
 				
